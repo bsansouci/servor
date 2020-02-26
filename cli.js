@@ -20,7 +20,13 @@ const open =
     : 'xdg-open';
 
 (async () => {
-  const args = process.argv.slice(2).filter(x => !~x.indexOf('--'));
+  let args = process.argv.slice(2);
+  const watchRootIndex = args.indexOf('--watchroot');
+  // Remove the arg --watchRoot and its payload.
+  if (watchRootIndex > -1) {
+    args.splice(watchRootIndex, 2);
+  }
+  args = args.filter(x => !~x.indexOf('--'));
   const admin = process.getuid && process.getuid() === 0;
   let credentials;
 
@@ -45,11 +51,11 @@ const open =
   }
 
   // Parse arguments from the command line
-
   const { root, protocol, port, ips, url } = await servor({
     root: args[0],
     fallback: args[1],
     port: args[2],
+    watchroot: watchRootIndex != -1 ? process.argv[watchRootIndex + 1] : undefined,
     reload: ~process.argv.indexOf('--reload'),
     credentials
   });

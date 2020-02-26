@@ -50,6 +50,7 @@ const livereload = `
 
 module.exports = async ({
   root = '.',
+  watchroot = '.',
   fallback = 'index.html',
   port,
   reload = true,
@@ -66,6 +67,7 @@ module.exports = async ({
     port = await fport();
   }
   root = root.startsWith('/') ? root : path.join(cwd, root);
+  watchroot = watchroot.startsWith('/') ? watchroot : path.join(cwd, watchroot);
   const clients = [];
   const protocol = credentials ? 'https' : 'http';
   const server = credentials
@@ -134,7 +136,7 @@ module.exports = async ({
   // Notify livereload clients on file change
 
   reload &&
-    watch(root, () => {
+    watch(watchroot, () => {
       while (clients.length > 0)
         sendMessage(clients.pop(), 'message', 'reload');
     });
